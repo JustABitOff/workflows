@@ -31,7 +31,7 @@ jobs:
         id: get_latest_tag
         run: |
           latest_tag=$(git describe --tags --abbrev=0)
-          latest_version=${latest_tag#v}  # Remove 'v' prefix if it exists
+          latest_version=${latest_tag#v}
           echo "latest_version=${latest_version}" >> $GITHUB_ENV
 
       - name: Validate manual version input
@@ -68,11 +68,8 @@ jobs:
               patch=$((patch + 1))
               ;;
             "Manually Specified")
-              if [ -z "${{ github.event.inputs.manual_version }}" ]; then
-                echo "Error: Manual version number must be provided."
-                exit 1
-              fi
               new_version="${{ github.event.inputs.manual_version }}"
+              new_version=${new_version#v}
               ;;
           esac
 
