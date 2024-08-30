@@ -20,12 +20,13 @@ jobs:
         id: get_latest_tag
         run: |
           latest_tag=$(git describe --tags --abbrev=0)
-          echo "latest_tag=${latest_tag}" >> $GITHUB_ENV
+          latest_version=${latest_tag#v}  # Remove 'v' prefix if it exists
+          echo "latest_version=${latest_version}" >> $GITHUB_ENV
 
       - name: Determine new version
         id: determine_version
         run: |
-          current_version=${{ env.latest_tag#v }}
+          latest_version=${{ env.latest_version }}
           echo "${current_version}"
           {# IFS='.' read -r major minor patch <<< "$current_version"
 
