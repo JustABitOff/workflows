@@ -96,40 +96,41 @@ jobs:
           new_version="${{ env.new_version }}"
           previous_version="v${{ env.latest_version }}"
 
-          # Define changelog sections
-          unreleased_section="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
-          new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/$previous_version...$new_version)\n"
+          # Define the new Unreleased section template
+          UNRELEASED_TEMPLATE="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)
 
-          # Backup the original changelog
-          cp CHANGELOG.md CHANGELOG.md.bak
+          ### Added
 
-          # Update the changelog
-          awk -v new_version_section="$new_version_section" -v unreleased_section="$unreleased_section" '
-          BEGIN { found_unreleased = 0 }
-          /^## \[Unreleased\]/ {
-            found_unreleased = 1
-            # Skip the current Unreleased section
-            next
-          }
-          /^## \[v/ {
-            if (found_unreleased) {
-              # Print the new version section before existing versions
-              print new_version_section
-              found_unreleased = 0
-            }
-            # Print existing version sections
-            print
-            next
-          }
-          {
-            print
-          }
-          END {
-            # Add the new unreleased section at the top
-            if (found_unreleased == 1) {
-              print unreleased_section
-            }
-          }' CHANGELOG.md.bak > CHANGELOG.md
+          ### Changed
+
+          ### Removed
+
+          ### Fixed
+
+          "
+
+          # First pass: Update the existing Unreleased section
+          awk -v new_version="$new_version" -v previous_version="$previous_version" '
+              /^## \[Unreleased\]/ {
+                  printf "## [%s](https://github.com/JustABitOff/workflows/compare/%s...%s)", new_version, previous_version, new_version
+                  print ""
+                  next
+              }
+              { print }
+          ' $CHANGELOG_FILE > temp_changelog.md && mv temp_changelog.md $CHANGELOG_FILE
+
+          # Second pass: Add the Unreleased template above any existing releases
+          awk -v unreleased_template="$UNRELEASED_TEMPLATE" '
+              BEGIN { found_unreleased = 0 }
+              /^## \[Unreleased\]/ { 
+                  found_unreleased = 1
+              }
+              /^## \[.*\]/ && found_unreleased == 0 { 
+                  print unreleased_template
+                  found_unreleased = 1
+              }
+              { print }
+          ' $CHANGELOG_FILE > temp_changelog.md && mv temp_changelog.md $CHANGELOG_FILE
 
       - name: Commit changes
         run: |
