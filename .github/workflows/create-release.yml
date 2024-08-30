@@ -38,6 +38,7 @@ jobs:
         id: determine_version
         run: |
           latest_version=${{ env.latest_version }}
+          echo "Current version is ${latest_version}"
           IFS='.' read -r major minor patch <<< "$latest_version"
 
           case "${{ github.event.inputs.release_type }}" in
