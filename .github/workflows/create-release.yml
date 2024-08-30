@@ -1,21 +1,5 @@
 name: Create Release Branch and PR
 
-{# on:
-  workflow_dispatch:
-    inputs:
-      release_type:
-        description: "Select release type"
-        required: true
-        type: choice
-        options:
-          - Major
-          - Minor
-          - Patch
-          - Manually Specified
-      manual_version:
-        description: "Manually specify version number"
-        required: false
-        type: string #}
 on:
   pull_request:
     branches:
@@ -42,6 +26,7 @@ jobs:
         id: determine_version
         run: |
           current_version=${{ env.latest_tag#v }}
+          echo "${current_version}"
           {# IFS='.' read -r major minor patch <<< "$current_version"
 
           case "${{ github.event.inputs.release_type }}" in
