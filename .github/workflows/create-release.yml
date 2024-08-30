@@ -77,5 +77,10 @@ jobs:
             new_version="${major}.${minor}.${patch}"
           fi
 
-          echo "new_version=${new_version}" >> $GITHUB_ENV
+          echo "new_version=v${new_version}" >> $GITHUB_ENV
           echo "New version is ${new_version}"
+
+      - name: Create release branch
+        run: |
+          git checkout -b release/${{ env.new_version }} develop
+          git push origin release/${{ env.new_version }}
