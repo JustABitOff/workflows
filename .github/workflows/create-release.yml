@@ -84,3 +84,36 @@ jobs:
         run: |
           git checkout -b release/${{ env.new_version }} develop
           git push origin release/${{ env.new_version }}
+
+      - name: Update CHANGELOG
+        run: |
+          new_version="${{ env.new_version }}"
+
+          # Define changelog sections
+          unreleased_section="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
+          new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/v${{ env.latest_version }}...$new_version)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
+
+          # Backup the original changelog
+          cp CHANGELOG.md CHANGELOG.md.bak
+
+          # Add new version section and move Unreleased section
+          awk -v new_version_section="$new_version_section" '
+          /^## \[Unreleased\]/ { 
+            # Print the new unreleased section
+            print new_version_section 
+            # Skip the current Unreleased section
+            in_unreleased=1
+          }
+          /^## \[v/ { 
+            # Print the new version section
+            if (in_unreleased) {
+              print new_version_section
+              in_unreleased=0
+            }
+            # Print the existing section
+            print
+            next
+          }
+          {
+            print
+          }' CHANGELOG.md.bak > CHANGELOG.md
