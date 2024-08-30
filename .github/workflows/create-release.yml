@@ -92,28 +92,34 @@ jobs:
 
       - name: Update CHANGELOG
         run: |
+          # Define new version
           new_version="${{ env.new_version }}"
+          previous_version="v${{ env.latest_version }}"
+
+          # Update dbt_project.yml with new version
+          sed -i "s/^version:.*/version: $new_version/" dbt_project.yml
 
           # Define changelog sections
           unreleased_section="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
-          new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/v${{ env.latest_version }}...$new_version)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
+          new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/$previous_version...$new_version)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
 
           # Backup the original changelog
           cp CHANGELOG.md CHANGELOG.md.bak
 
-          # Add new version section and move Unreleased section
-          awk -v new_version_section="$new_version_section" '
-          /^## \[Unreleased\]/ { 
-            # Print the new unreleased section
-            print new_version_section 
-            # Skip the current Unreleased section
-            in_unreleased=1
+          # Update the changelog
+          awk -v new_version_section="$new_version_section" -v unreleased_section="$unreleased_section" '
+          BEGIN { found_unreleased = 0 }
+          /^## \[Unreleased\]/ {
+            found_unreleased = 1
+            # Output the new version section and skip the current Unreleased section
+            print new_version_section
+            next
           }
-          /^## \[v/ { 
-            # Print the new version section
-            if (in_unreleased) {
-              print new_version_section
-              in_unreleased=0
+          /^## \[v/ {
+            if (found_unreleased) {
+              # Print the new unreleased section if not already printed
+              print unreleased_section
+              found_unreleased = 0
             }
             # Print the existing section
             print
