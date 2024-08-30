@@ -1,10 +1,21 @@
 name: Create Release Branch and PR
 
 on:
-  pull_request:
-    branches:
-      - "develop"
-    types: [opened, reopened, synchronize]
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Select release type"
+        required: true
+        type: choice
+        options:
+          - Major
+          - Minor
+          - Patch
+          - Manually Specified
+      manual_version:
+        description: "Manually specify version number"
+        required: false
+        type: string
 
 jobs:
   create-release:
@@ -27,4 +38,33 @@ jobs:
         id: determine_version
         run: |
           latest_version=${{ env.latest_version }}
-          echo "${latest_version}"
+          IFS='.' read -r major minor patch <<< "$latest_version"
+
+          case "${{ github.event.inputs.release_type }}" in
+            "Major")
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            "Minor")
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            "Patch")
+              patch=$((patch + 1))
+              ;;
+            "Manually Specified")
+              if [ -z "${{ github.event.inputs.manual_version }}" ]; then
+                echo "Error: Manual version number must be provided."
+                exit 1
+              fi
+              new_version="${{ github.event.inputs.manual_version }}"
+              ;;
+          esac
+
+          if [ "${{ github.event.inputs.release_type }}" != "Manually Specified" ]; then
+            new_version="${major}.${minor}.${patch}"
+          fi
+
+          echo "new_version=${new_version}" >> $GITHUB_ENV
+          echo "New version is ${new_version}"
