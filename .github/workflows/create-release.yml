@@ -1,6 +1,6 @@
 name: Create Release Branch and PR
 
-on:
+{# on:
   workflow_dispatch:
     inputs:
       release_type:
@@ -15,7 +15,12 @@ on:
       manual_version:
         description: "Manually specify version number"
         required: false
-        type: string
+        type: string #}
+on:
+  pull_request:
+    branches:
+      - "develop"
+    types: [opened, reopened, synchronize]
 
 jobs:
   create-release:
