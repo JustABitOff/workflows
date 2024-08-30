@@ -151,3 +151,5 @@ jobs:
           head: release/${{ env.new_version }}
           base: main
           body: "This PR is to merge the release branch into main for version ${{ env.new_version }}."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
