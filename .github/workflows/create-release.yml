@@ -113,11 +113,11 @@ jobs:
           }
           /^## \[v/ {
             if (found_unreleased) {
-              # Print the new version section
+              # Print the new version section before existing versions
               print new_version_section
               found_unreleased = 0
             }
-            # Print the existing section
+            # Print existing version sections
             print
             next
           }
@@ -125,8 +125,8 @@ jobs:
             print
           }
           END {
-            # Add the new unreleased section at the top if it wasn't added
-            if (found_unreleased == 0) {
+            # Add the new unreleased section at the top
+            if (found_unreleased == 1) {
               print unreleased_section
             }
           }' CHANGELOG.md.bak > CHANGELOG.md
