@@ -117,7 +117,7 @@ jobs:
                   next
               }
               { print }
-          ' $CHANGELOG_FILE > temp_changelog.md && mv temp_changelog.md $CHANGELOG_FILE
+          ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
 
           # Second pass: Add the Unreleased template above any existing releases
           awk -v unreleased_template="$UNRELEASED_TEMPLATE" '
@@ -130,7 +130,7 @@ jobs:
                   found_unreleased = 1
               }
               { print }
-          ' $CHANGELOG_FILE > temp_changelog.md && mv temp_changelog.md $CHANGELOG_FILE
+          ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
 
       - name: Commit changes
         run: |
