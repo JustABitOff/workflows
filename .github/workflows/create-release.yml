@@ -142,7 +142,7 @@ jobs:
           git push origin release/${{ env.new_version }}
 
       - name: Create pull request
-        uses: octokit/request-action@v2.3
+        uses: octokit/request-action@v2.x
         with:
           route: POST /repos/{owner}/{repo}/pulls
           owner: ${{ github.repository_owner }}
