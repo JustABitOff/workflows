@@ -96,9 +96,6 @@ jobs:
           new_version="${{ env.new_version }}"
           previous_version="v${{ env.latest_version }}"
 
-          # Update dbt_project.yml with new version
-          sed -i "s/^version:.*/version: $new_version/" dbt_project.yml
-
           # Define changelog sections
           unreleased_section="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
           new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/$previous_version...$new_version)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
