@@ -1,0 +1,99 @@
+name: Create Release Branch and PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Select release type"
+        required: true
+        type: choice
+        options:
+          - Major
+          - Minor
+          - Patch
+          - Manually Specified
+      manual_version:
+        description: "Manually specify version number"
+        required: false
+        type: string
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0)
+          echo "latest_tag=${latest_tag}" >> $GITHUB_ENV
+
+      - name: Determine new version
+        id: determine_version
+        run: |
+          current_version=${{ env.latest_tag#v }}
+          {# IFS='.' read -r major minor patch <<< "$current_version"
+
+          case "${{ github.event.inputs.release_type }}" in
+            "Increment Major version release")
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            "Increment Minor version release")
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            "Increment Patch version release")
+              patch=$((patch + 1))
+              ;;
+            "Manually specify release number")
+              if [ -z "${{ github.event.inputs.manual_version }}" ]; then
+                echo "Error: Manual version number must be provided."
+                exit 1
+              fi
+              new_version="${{ github.event.inputs.manual_version }}"
+              ;;
+          esac
+
+          if [ "${{ github.event.inputs.release_type }}" != "Manually specify release number" ]; then
+            new_version="${major}.${minor}.${patch}"
+          fi
+
+          echo "new_version=${new_version}" >> $GITHUB_ENV
+          echo "New version is ${new_version}"
+
+      - name: Create release branch
+        run: |
+          git checkout -b release/${{ env.new_version }}
+          git push origin release/${{ env.new_version }}
+
+      - name: Update version in files
+        run: |
+          sed -i "s/^version:.*/version: ${{ env.new_version }}/" dbt_project.yml
+          sed -i "/^## Unreleased/a\\n## [${{ env.new_version }}] - $(date +'%Y-%m-%d')\n\n- Updated version to ${{ env.new_version }}" CHANGELOG.md
+
+      - name: Commit changes
+        run: |
+          git add dbt_project.yml CHANGELOG.md
+          git commit -m "Update version to ${{ env.new_version }}"
+
+      - name: Push changes
+        run: |
+          git push origin release/${{ env.new_version }}
+
+      - name: Create pull request
+        uses: octokit/request-action@v2
+        with:
+          route: POST /repos/{owner}/{repo}/pulls
+          owner: ${{ github.repository_owner }}
+          repo: ${{ github.repository }}
+          title: "Release ${{ env.new_version }}"
+          head: release/${{ env.new_version }}
+          base: main
+          body: "This PR is to merge the release branch into main for version ${{ env.new_version }}." #}
