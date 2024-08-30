@@ -98,7 +98,7 @@ jobs:
 
           # Define changelog sections
           unreleased_section="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
-          new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/$previous_version...$new_version)\n\n### Added\n\n### Changed\n\n### Removed\n\n### Fixed\n"
+          new_version_section="## [$new_version](https://github.com/JustABitOff/workflows/compare/$previous_version...$new_version)\n"
 
           # Backup the original changelog
           cp CHANGELOG.md CHANGELOG.md.bak
@@ -108,14 +108,13 @@ jobs:
           BEGIN { found_unreleased = 0 }
           /^## \[Unreleased\]/ {
             found_unreleased = 1
-            # Output the new version section and skip the current Unreleased section
-            print new_version_section
+            # Skip the current Unreleased section
             next
           }
           /^## \[v/ {
             if (found_unreleased) {
-              # Print the new unreleased section if not already printed
-              print unreleased_section
+              # Print the new version section
+              print new_version_section
               found_unreleased = 0
             }
             # Print the existing section
@@ -124,6 +123,12 @@ jobs:
           }
           {
             print
+          }
+          END {
+            # Add the new unreleased section at the top if it wasn't added
+            if (found_unreleased == 0) {
+              print unreleased_section
+            }
           }' CHANGELOG.md.bak > CHANGELOG.md
 
       - name: Commit changes
