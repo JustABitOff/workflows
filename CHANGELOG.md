@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- added steps to create Github release and merge PR from Main to Develop.
+
 ### Removed
 
 ### Fixed
