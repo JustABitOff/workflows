@@ -65,7 +65,7 @@ jobs:
             --title "Merge main into develop for release ${{ env.new_version }}" \
             --body "This PR is to merge the main branch into develop after releasing version ${{ env.new_version }}.")
 
-          echo "$pr_url"
+          echo "pr_url=$pr_url" >> $GITHUB_ENV
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -73,7 +73,9 @@ jobs:
         run: |
           echo "PR URL: ${{ env.pr_url }}"
           pr_number=$(echo "${{ env.pr_url }}" | grep -oP '\d+$')
-          echo "Extracted PR Number: ${{ env.pr_number }}"
+          echo "Extracted PR Number: $pr_number"
+
+          echo "pr_number=$pr_number" >> $GITHUB_ENV
 
       - name: Merge PR
         run: |
