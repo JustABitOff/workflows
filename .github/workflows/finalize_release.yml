@@ -1,0 +1,64 @@
+name: Finalize Release
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  finalize-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: develop
+
+      - name: Extract release branch and version
+        id: extract_release_info
+        run: |
+          # Get the commit message
+          commit_message="${{ github.event.head_commit.message }}"
+          echo "$commit_message"
+          echo "test this: $commit_message" | grep -oP 'from .*/release/v\d+\.\d+\.\d+' | awk -F'/' '{print $NF}'
+          # Extract the release branch name from the commit message
+          # Assumes commit message is in the format: "Merge pull request #123 from owner/release/v1.0.0"
+          release_branch=$(echo "$commit_message" | grep -oP 'from .*/release/v\d+\.\d+\.\d+' | awk -F'/' '{print $NF}')
+
+          if [[ -z "$release_branch" ]]; then
+            echo "No release branch found in the commit message. Exiting workflow."
+            exit 78  # Exit with a neutral status (GitHub's special exit code for warnings)
+          fi
+
+          # Validate the release branch format
+          if [[ ! "$release_branch" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release branch '$release_branch' does not match the expected format 'release/vX.X.X'. Exiting workflow."
+            exit 78
+          fi
+
+          # Extract the version number
+          new_version="${release_branch#release/}"
+
+          # Export variables for use in later steps
+          echo "release_branch=$release_branch" >> $GITHUB_ENV
+          echo "new_version=$new_version" >> $GITHUB_ENV
+
+      - name: Tag new version
+        run: |
+          git tag -a "$new_version" -m "Release version $new_version"
+          git push origin "$new_version"
+
+      - name: Create PR to merge main into develop
+        run: |
+          gh pr create \
+            --base develop \
+            --head main \
+            --title "Merge main into develop" \
+            --body "This PR is to merge the main branch into develop after releasing version ${{ env.new_version }}."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Delete release branch
+        run: |
+          git push origin --delete "${{ env.release_branch }}"
