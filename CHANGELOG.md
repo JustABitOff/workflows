@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
-## [v2.0.0](https://github.com/JustABitOff/workflows/compare/v1.1.0...v2.0.0)
+## [v3.0.0](https://github.com/JustABitOff/workflows/compare/v2.0.0...v3.0.0)
 
 ### Added
 
@@ -27,13 +27,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
-## [v1.1.0](https://github.com/JustABitOff/workflows/compare/v1.0.1...v1.1.0)
+## [v2.0.0](https://github.com/JustABitOff/workflows/compare/v1.1.0...v2.0.0)
 
 ### Added
 
 ### Changed
-
-- added steps to create Github release and merge PR from Main to Develop.
 
 ### Removed
 
