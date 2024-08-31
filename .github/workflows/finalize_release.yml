@@ -69,13 +69,13 @@ jobs:
 
       - name: Debug PR URL and Extract PR Number
         run: |
-          echo "PR URL: $pr_url"
-          pr_number=$(echo "$pr_url" | grep -oP '\d+$')
-          echo "Extracted PR Number: $pr_number"
+          echo "PR URL: ${{ env.pr_url }}"
+          pr_number=$(echo "${{ env.pr_url }}" | grep -oP '\d+$')
+          echo "Extracted PR Number: ${{ env.pr_number }}"
 
       - name: Merge PR
         run: |
-          gh pr merge $pr_number --merge
+          gh pr merge ${{ env.pr_number }} --merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
