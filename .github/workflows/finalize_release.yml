@@ -1,0 +1,22 @@
+name: Finalize Release
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  finalize_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Determine release branch and version
+        run: |
+          # Get the branch name that triggered the workflow
+          release_branch="${{ github.ref_name }}"
+          echo "${{ github.ref_name }}"
