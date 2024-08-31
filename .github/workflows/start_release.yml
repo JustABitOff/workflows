@@ -1,4 +1,4 @@
-name: Create Release Branch and PR
+name: Start Release
 
 on:
   workflow_dispatch:
