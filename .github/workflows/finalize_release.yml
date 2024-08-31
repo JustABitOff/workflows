@@ -37,6 +37,11 @@ jobs:
           echo "release_branch=$release_branch" >> $GITHUB_ENV
           echo "new_version=$new_version" >> $GITHUB_ENV
 
+      - name: Set up Git
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
       - name: Tag new version
         run: |
           git tag -a "${{ env.new_version }}" -m "Release version ${{ env.new_version }}"
