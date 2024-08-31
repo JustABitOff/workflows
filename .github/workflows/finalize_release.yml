@@ -64,6 +64,8 @@ jobs:
             --head main \
             --title "Merge main into develop for release ${{ env.new_version }}" \
             --body "This PR is to merge the main branch into develop after releasing version ${{ env.new_version }}.")
+
+          echo "$pr_url"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
