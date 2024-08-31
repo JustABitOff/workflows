@@ -67,9 +67,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Debug PR URL and Extract PR Number
+        run: |
+          echo "PR URL: $pr_url"
+          pr_number=$(echo "$pr_url" | grep -oP '\d+$')
+          echo "Extracted PR Number: $pr_number"
+
       - name: Merge PR
         run: |
-          pr_number=$(echo $pr_url | grep -oP '\d+$')
           gh pr merge $pr_number --merge
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
