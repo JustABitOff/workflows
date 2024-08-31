@@ -11,6 +11,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Removed
+
+### Fixed
+
+
+## [v1.0.1](https://github.com/JustABitOff/workflows/compare/v1.0.0...v1.0.1)
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+
+## [v1.0.0](https://github.com/JustABitOff/workflows/compare/v0.2.0...v1.0.0)
+
+### Added
+
+### Changed
+
 - updated new_file.txt with some comment
 
 ### Removed
