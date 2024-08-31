@@ -1,0 +1,152 @@
+name: Start Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Select release type"
+        required: true
+        type: choice
+        options:
+          - Major
+          - Minor
+          - Patch
+          - Manually Specified
+      manual_version:
+        description: "Manually specify version number"
+        required: false
+        type: string
+
+jobs:
+  start_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: |
+          latest_tag=$(git describe --tags --abbrev=0)
+          latest_version=${latest_tag#v}
+          echo "latest_version=${latest_version}" >> $GITHUB_ENV
+
+      - name: Validate manual version input
+        if: ${{ github.event.inputs.release_type == 'Manually Specified' }}
+        run: |
+          if [ -z "${{ github.event.inputs.manual_version }}" ]; then
+            echo "Error: Manual version number must be provided when selecting 'Manually Specified'."
+            exit 1
+          fi
+
+          if [[ ! "${{ github.event.inputs.manual_version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: Version number must be in the vX.X.X format."
+            exit 1
+          fi
+
+      - name: Determine new version
+        id: determine_version
+        run: |
+          latest_version=${{ env.latest_version }}
+          echo "Current version is ${latest_version}"
+          IFS='.' read -r major minor patch <<< "$latest_version"
+
+          case "${{ github.event.inputs.release_type }}" in
+            "Major")
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            "Minor")
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            "Patch")
+              patch=$((patch + 1))
+              ;;
+            "Manually Specified")
+              new_version="${{ github.event.inputs.manual_version }}"
+              new_version=${new_version#v}
+              ;;
+          esac
+
+          if [ "${{ github.event.inputs.release_type }}" != "Manually Specified" ]; then
+            new_version="${major}.${minor}.${patch}"
+          fi
+
+          echo "new_version=v${new_version}" >> $GITHUB_ENV
+          echo "New version is ${new_version}"
+
+      - name: Set up Git
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Create release branch
+        run: |
+          git checkout -b release/${{ env.new_version }} develop
+          git push origin release/${{ env.new_version }}
+
+      - name: Update CHANGELOG
+        run: |
+          # Define new version
+          new_version="${{ env.new_version }}"
+          previous_version="v${{ env.latest_version }}"
+
+          # Define the new Unreleased section template
+          UNRELEASED_TEMPLATE="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)
+
+          ### Added
+
+          ### Changed
+
+          ### Removed
+
+          ### Fixed
+
+          "
+
+          # First pass: Update the existing Unreleased section
+          awk -v new_version="$new_version" -v previous_version="$previous_version" '
+              /^## \[Unreleased\]/ {
+                  printf "## [%s](https://github.com/JustABitOff/workflows/compare/%s...%s)", new_version, previous_version, new_version
+                  print ""
+                  next
+              }
+              { print }
+          ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
+
+          # Second pass: Add the Unreleased template above any existing releases
+          awk -v unreleased_template="$UNRELEASED_TEMPLATE" '
+              BEGIN { found_unreleased = 0 }
+              /^## \[Unreleased\]/ { 
+                  found_unreleased = 1
+              }
+              /^## \[.*\]/ && found_unreleased == 0 { 
+                  print unreleased_template
+                  found_unreleased = 1
+              }
+              { print }
+          ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
+
+      - name: Commit changes
+        run: |
+          git add CHANGELOG.md
+          git commit -m "Updates CHANGELOG for ${{ env.new_version }} release"
+
+      - name: Push changes
+        run: |
+          git push origin release/${{ env.new_version }}
+
+      - name: Create pull request
+        run: |
+          gh pr create \
+            --base main \
+            --head release/${{ env.new_version }} \
+            --title "Release ${{ env.new_version }}" \
+            --body "This PR is to merge the release branch into main for version ${{ env.new_version }}."
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
