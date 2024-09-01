@@ -16,99 +16,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [v1.0.0](https://github.com/JustABitOff/workflows/compare/v0.0.0...v1.0.0)
 
 ### Added
 
 ### Changed
 
-### Removed
-
-### Fixed
-
-
-
-
-## [v3.0.2](https://github.com/JustABitOff/workflows/compare/v1.0.1...v3.0.2)
-## [v3.0.1](https://github.com/JustABitOff/workflows/compare/v1.0.1...v3.0.1)
-
-### Added
-
-### Changed
+- Updated README.md
 
 ### Removed
 
-### Fixed
-
-
-## [v3.0.0](https://github.com/JustABitOff/workflows/compare/v2.0.0...v3.0.0)
-
-### Added
-
-### Changed
-
-- added steps to create Github release and merge PR from Main to Develop.
-
-### Removed
-
-### Fixed
-
-
-## [v2.0.0](https://github.com/JustABitOff/workflows/compare/v1.1.0...v2.0.0)
-
-### Added
-
-### Changed
-
-### Removed
-
-### Fixed
-
-
-## [v1.0.1](https://github.com/JustABitOff/workflows/compare/v1.0.0...v1.0.1)
-
-### Added
-
-### Changed
-
-### Removed
-
-### Fixed
-
-
-## [v1.0.0](https://github.com/JustABitOff/workflows/compare/v0.2.0...v1.0.0)
-
-### Added
-
-### Changed
-
-- updated new_file.txt with some comment
-
-### Removed
-
-### Fixed
-
-
-## [v0.2.0](https://github.com/JustABitOff/workflows/compare/v0.1.0...v0.2.0)
-
-### Added
-
-- newfile
-
-### Changed
-
-### Removed
-
-### Fixed
-
-
-## [v0.1.0](https://github.com/JustABitOff/workflows/compare/v0.0.0...v0.1.0)
-
-### Added
-
-- Added the Changelog
-
-### Changed
-
-### Removed
+- Remove new_file.txt
 
 ### Fixed
