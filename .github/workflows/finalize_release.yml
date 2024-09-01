@@ -89,7 +89,7 @@ jobs:
         run: |
           gh release create "${{ env.new_version }}" \
             --title "${{ env.new_version }}" \
-            --notes "Release notes for ${{ env.new_version }}" \
+            --notes-file CHANGELOG.md \
             --latest \
             --target main
         env:
