@@ -85,11 +85,15 @@ jobs:
           git tag -a "${{ env.new_version }}" -m "Release version ${{ env.new_version }}"
           git push origin "${{ env.new_version }}"
 
+      - name: Get Release Notes
+        run: |
+          awk '/^## \[v1.0.0\]/ {flag=1; next} /^## \[/{if (flag) exit} flag {print $0}' CHANGELOG.md >> tmp_changelog.md
+
       - name: Create GitHub Release
         run: |
           gh release create "${{ env.new_version }}" \
             --title "${{ env.new_version }}" \
-            --notes-file CHANGELOG.md \
+            --notes-file tmp_changelog.md \
             --latest \
             --target main
         env:
