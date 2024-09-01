@@ -26,6 +26,11 @@ jobs:
         with:
           ref: main
 
+      - name: Set up Git
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
       - name: Extract release branch and version
         id: extract_release_info
         run: |
@@ -51,11 +56,8 @@ jobs:
           echo "release_pr_number=$release_pr_number" >> $GITHUB_ENV
           echo "release_branch=$release_branch" >> $GITHUB_ENV
           echo "new_version=$new_version" >> $GITHUB_ENV
-
-      - name: Set up Git
-        run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Merge release PR
         run: |
