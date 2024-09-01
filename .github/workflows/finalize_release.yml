@@ -45,7 +45,7 @@ jobs:
           # Get the PR details to determine the branch
           pr_details=$(gh pr view $release_pr_number --json headRefName -q ".headRefName")
 
-          release_branch="release/${pr_details}"
+          release_branch="${pr_details}"
           new_version="${release_branch#release/}"
 
           if [[ ! "$release_branch" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
