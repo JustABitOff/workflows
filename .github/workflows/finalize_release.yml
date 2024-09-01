@@ -1,46 +1,69 @@
 name: Finalize Release
 
 on:
-  push:
-    branches:
-      - main
+  workflow_dispatch:
+    inputs:
+      pr_url:
+        description: "The URL of the PR to merge release into main"
+        required: true
+        type: string
 
 jobs:
   finalize-release:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Validate PR URL
+        id: validate_pr_url
+        run: |
+          if [[ ! "${{ github.event.inputs.pr_url }}" =~ ^https://github.com/[^/]+/[^/]+/pull/[0-9]+$ ]]; then
+            echo "Error: The PR URL '${{ github.event.inputs.pr_url }}' does not match the expected format 'https://github.com/owner/repo/pull/X'."
+            exit 1
+          fi
+
       - name: Checkout Main Branch
         uses: actions/checkout@v4
         with:
           ref: main
 
+      - name: Set up Git
+        run: |
+          git config --global user.name "${GITHUB_ACTOR}"
+          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+
       - name: Extract release branch and version
         id: extract_release_info
         run: |
-          # Get the commit message
-          commit_message="${{ github.event.head_commit.message }}"
-          release_branch=$(echo "$commit_message" | grep -oP 'release/v\d+\.\d+\.\d+')
+          # Extract PR number from the provided PR URL
+          release_pr_number=$(echo "${{ github.event.inputs.pr_url }}" | grep -oP '\d+$')
 
-          if [[ -z "$release_branch" ]]; then
-            echo "No release branch found in the commit message. Exiting workflow."
+          if [[ -z "$release_pr_number" ]]; then
+            echo "No PR number found in the URL. Exiting workflow."
             exit 78
           fi
+
+          # Get the PR details to determine the branch
+          pr_details=$(gh pr view $release_pr_number --json headRefName -q ".headRefName")
+
+          release_branch="${pr_details}"
+          new_version="${release_branch#release/}"
 
           if [[ ! "$release_branch" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
             echo "Release branch '$release_branch' does not match the expected format 'release/vX.X.X'. Exiting workflow."
             exit 78
           fi
 
-          new_version="${release_branch#release/}"
-
+          echo "release_pr_number=$release_pr_number" >> $GITHUB_ENV
           echo "release_branch=$release_branch" >> $GITHUB_ENV
           echo "new_version=$new_version" >> $GITHUB_ENV
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Git
+      - name: Merge release PR
         run: |
-          git config --global user.name "${GITHUB_ACTOR}"
-          git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
+          gh pr merge ${{ env.release_pr_number }} --merge
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Tag new version
         run: |
