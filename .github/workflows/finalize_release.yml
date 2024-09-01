@@ -8,10 +8,13 @@ on:
         required: true
         type: string
 
+permissions:
+  actions: write
+  contents: write
+
 jobs:
   finalize-release:
     runs-on: ubuntu-latest
-
     steps:
       - name: Validate PR URL
         id: validate_pr_url
