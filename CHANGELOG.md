@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Removed
+
+### Fixed
+
+
+## [v5.0.0](https://github.com/JustABitOff/workflows/compare/v4.13.0...v5.0.0)
+
+### Added
+
+### Changed
+
 - ensure all remote actions are from bot.
 
 ### Removed
