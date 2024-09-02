@@ -75,7 +75,7 @@ jobs:
 
       - name: Merge release PR
         run: |
-          gh pr merge ${{ env.release_pr_number }}
+          gh pr merge ${{ env.release_pr_number }} \
           --merge \
           --auto
         env:
