@@ -4,6 +4,7 @@
 4. Store private key as secret for actions
 5. install app and grant access to desired repo(s)
     a. Actions - Read-Only
-    b. Contents - Read/Write
-    c. Pull Requests - Read/Write
+    b. Checks - Read-Only
+    c. Contents - Read/Write
+    d. Pull Requests - Read/Write
 6. Generate token in actions
