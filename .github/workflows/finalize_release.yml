@@ -75,8 +75,7 @@ jobs:
 
       - name: Wait for PR Checks to Pass
         run: |
-          checks_response=$(gh pr checks ${{ env.release_pr_number }} 2>&1)
-
+          checks_response=$(gh pr checks ${{ env.release_pr_number }} 2>&1) || \
           if echo "$checks_response" | grep -qE "no checks reported on the '.*' branch"; then
             echo "No checks found on this PR."
             has_checks=false
@@ -136,8 +135,7 @@ jobs:
 
       - name: Wait for PR Checks to Pass
         run: |
-          checks_response=$(gh pr checks ${{ env.pr_number }} 2>&1)
-
+          checks_response=$(gh pr checks ${{ env.pr_number }} 2>&1) || \
           if echo "$checks_response" | grep -qE "no checks reported on the '.*' branch"; then
             echo "No checks found on this PR."
             has_checks=false
