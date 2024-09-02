@@ -16,6 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [v2.0.0](https://github.com/JustABitOff/workflows/compare/v1.6.1...v2.0.0)
+
+### Added
+
+### Changed
+
+- Cleaned up Hello World.
+
+### Removed
+
+### Fixed
+
+
 ## [v1.6.1](https://github.com/JustABitOff/workflows/compare/v1.6.0...v1.6.1)
 
 ### Added
