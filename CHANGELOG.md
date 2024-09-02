@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Hotfix in the hello world scrpit!
+
 
 ## [v1.6.0](https://github.com/JustABitOff/workflows/compare/v1.5.0...v1.6.0)
 
