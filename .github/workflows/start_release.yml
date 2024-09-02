@@ -4,18 +4,13 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: "Select release type"
+        description: "Release Type"
         required: true
         type: choice
         options:
           - Minor
           - Patch
           - Major
-          - Manually Specified
-      manual_version:
-        description: "Manually specify version number"
-        required: false
-        type: string
 
 jobs:
   start_release:
@@ -51,19 +46,6 @@ jobs:
 
           echo "branch_prefix=${branch_prefix}" >> $GITHUB_ENV
 
-      - name: Validate manual version input
-        if: ${{ github.event.inputs.release_type == 'Manually Specified' }}
-        run: |
-          if [ -z "${{ github.event.inputs.manual_version }}" ]; then
-            echo "Error: Manual version number must be provided when selecting 'Manually Specified'."
-            exit 1
-          fi
-
-          if [[ ! "${{ github.event.inputs.manual_version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Error: Version number must be in the vX.X.X format."
-            exit 1
-          fi
-
       - name: Determine new version
         id: determine_version
         run: |
@@ -84,15 +66,9 @@ jobs:
             "Patch")
               patch=$((patch + 1))
               ;;
-            "Manually Specified")
-              new_version="${{ github.event.inputs.manual_version }}"
-              new_version=${new_version#v}
-              ;;
           esac
 
-          if [ "${{ github.event.inputs.release_type }}" != "Manually Specified" ]; then
-            new_version="${major}.${minor}.${patch}"
-          fi
+          new_version="${major}.${minor}.${patch}"
 
           echo "new_version=v${new_version}" >> $GITHUB_ENV
           echo "New version is ${new_version}"
