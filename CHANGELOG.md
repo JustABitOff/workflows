@@ -9,7 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- added dbt_project.yml
+
 ### Changed
+
+- Updated start_release.yml to bump the version number of this project in dbt_project.yml on new release.
 
 ### Removed
 
