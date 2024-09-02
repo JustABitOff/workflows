@@ -22,8 +22,8 @@ jobs:
         run: |
           sleep 10
 
-      - name: Generate a token
-        id: generate-token
+      - name: Generate another token
+        id: generate-another-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.JABO_APP_ID }}
