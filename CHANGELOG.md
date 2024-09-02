@@ -9,6 +9,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+### Fixed
+
+
+## [v3.2.0](https://github.com/JustABitOff/workflows/compare/v3.1.0...v3.2.0)
+
+### Added
+
 - added dbt_project.yml
 
 ### Changed
