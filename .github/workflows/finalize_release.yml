@@ -46,10 +46,9 @@ jobs:
           git config --global user.name "${GITHUB_ACTOR}"
           git config --global user.email "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
-      - name: Extract release branch and version
+      - name: Extract branch and version
         id: extract_release_info
         run: |
-          # Extract PR number from the provided PR URL
           release_pr_number=$(echo "${{ github.event.inputs.pr_url }}" | grep -oP '\d+$')
 
           if [[ -z "$release_pr_number" ]]; then
@@ -61,10 +60,10 @@ jobs:
           pr_details=$(gh pr view $release_pr_number --json headRefName -q ".headRefName")
 
           release_branch="${pr_details}"
-          new_version="${release_branch#release/}"
+          new_version="${release_branch#*/}"
 
-          if [[ ! "$release_branch" =~ ^release/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "Release branch '$release_branch' does not match the expected format 'release/vX.X.X'. Exiting workflow."
+          if [[ ! "$release_branch" =~ ^(release|hotfix)/v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Release branch '$release_branch' does not match the expected format 'release/vX.X.X' or 'hotfix/vX.X.X'. Exiting workflow."
             exit 78
           fi
 
