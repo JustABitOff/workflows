@@ -84,7 +84,7 @@ jobs:
             gh pr checks ${{ env.release_pr_number }} --watch
           fi
         env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Merge release PR
         run: |
