@@ -73,9 +73,21 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Wait for PR Checks
+      - name: Wait for PR Checks to Pass
         run: |
-          gh pr checks ${{ env.release_pr_number }} --watch
+          checks_response=$(gh pr checks ${{ env.release_pr_number }} 2>&1)
+
+          if echo "$checks_response" | grep -qE "no checks reported on the '.*' branch"; then
+            echo "No checks found on this PR."
+            has_checks=false
+          else
+            echo "Checks found on this PR...continuing..."
+            has_checks=true
+          fi
+
+          if [ "$has_checks" = true ]; then
+            gh pr checks ${{ env.release_pr_number }} --watch
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -122,9 +134,21 @@ jobs:
 
           echo "pr_number=$pr_number" >> $GITHUB_ENV
 
-      - name: Wait for PR Checks
+      - name: Wait for PR Checks to Pass
         run: |
-          gh pr checks ${{ env.pr_number }} --watch
+          checks_response=$(gh pr checks ${{ env.pr_number }} 2>&1)
+
+          if echo "$checks_response" | grep -qE "no checks reported on the '.*' branch"; then
+            echo "No checks found on this PR."
+            has_checks=false
+          else
+            echo "Checks found on this PR...continuing..."
+            has_checks=true
+          fi
+
+          if [ "$has_checks" = true ]; then
+            gh pr checks ${{ env.pr_number }} --watch
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
