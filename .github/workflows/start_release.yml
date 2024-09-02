@@ -103,6 +103,7 @@ jobs:
             base_branch="main"
           fi
 
+          git checkout $base_branch
           git checkout -b ${{ env.branch_prefix }}/${{ env.new_version }} ${base_branch}
           git push origin ${{ env.branch_prefix }}/${{ env.new_version }}
 
