@@ -16,6 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [v3.0.0](https://github.com/JustABitOff/workflows/compare/v2.0.0...v3.0.0)
+
+### Added
+
+- Added sleep to finalizing release because it was too fast.
+
+### Changed
+
+### Removed
+
+### Fixed
+
+
 ## [v2.0.0](https://github.com/JustABitOff/workflows/compare/v1.6.1...v2.0.0)
 
 ### Added

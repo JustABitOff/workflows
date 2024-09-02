@@ -88,6 +88,7 @@ jobs:
         id: get_release_notes
         run: |
           awk '/^## \[${{ env.new_version }}\]/ {flag=1; next} /^## \[/{if (flag) exit} flag {print $0}' CHANGELOG.md >> tmp_changelog.md
+          sleep 10
 
       - name: Create GitHub Release
         run: |
