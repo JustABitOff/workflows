@@ -185,10 +185,6 @@ jobs:
           FILE_TO_COMMIT: dbt_project.yml
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
 
-      - name: Push changes
-        run: |
-          git push origin ${{ env.branch_prefix }}/${{ env.new_version }}
-
       - name: Create pull request
         run: |
           gh pr create \
