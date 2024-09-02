@@ -23,6 +23,9 @@ jobs:
         with:
           app-id: ${{ secrets.JABO_APP_ID }}
           private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
 
       - name: Checkout
         uses: actions/checkout@v4

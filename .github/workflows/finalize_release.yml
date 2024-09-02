@@ -18,6 +18,9 @@ jobs:
         with:
           app-id: ${{ secrets.JABO_APP_ID }}
           private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
 
       - name: Validate PR URL
         id: validate_pr_url
@@ -153,6 +156,16 @@ jobs:
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate another token
+        id: generate-another-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
 
       - name: Merge PR
         run: |
