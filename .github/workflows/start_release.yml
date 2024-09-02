@@ -151,7 +151,7 @@ jobs:
 
       - name: Update dbt_project.yml
         run: |
-          sed -i "s/^version: .*/version: \"${{ env.new_version }}\"/"
+          sed -i "s/^version: .*/version: \"${{ env.new_version }}\"/" dbt_project.yml
 
       - name: Commit changes
         run: |
