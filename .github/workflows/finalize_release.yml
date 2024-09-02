@@ -28,6 +28,13 @@ jobs:
   finalize_release:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+
       - name: Validate PR URL
         id: validate_pr_url
         run: |
@@ -71,7 +78,7 @@ jobs:
           echo "release_branch=$release_branch" >> $GITHUB_ENV
           echo "new_version=$new_version" >> $GITHUB_ENV
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Wait for PR Checks to Pass
         run: |
@@ -88,13 +95,13 @@ jobs:
             gh pr checks ${{ env.release_pr_number }} --watch
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Merge release PR
         run: |
           gh pr merge ${{ env.release_pr_number }} --merge
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Get Release Notes
         id: get_release_notes
@@ -111,7 +118,7 @@ jobs:
             --latest \
             --target main
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Create PR to merge main into develop
         run: |
@@ -123,7 +130,7 @@ jobs:
 
           echo "pr_url=$pr_url" >> $GITHUB_ENV
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Debug PR URL and Extract PR Number
         run: |
@@ -148,13 +155,13 @@ jobs:
             gh pr checks ${{ env.pr_number }} --watch
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Merge PR
         run: |
           gh pr merge ${{ env.pr_number }} --merge
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
 
       - name: Delete release branch
         run: |
