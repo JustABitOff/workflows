@@ -164,14 +164,12 @@ jobs:
             --field encoding="base64" \
             --field branch="$DESTINATION_BRANCH" \
             --field sha="$SHA" \
-            --field committer[name]="$COMMITTER_NAME" \
-            --field committer[email]="$COMMITTER_EMAIL"
+            --field committer[name]="$GITHUB_ACTOR" \
+            --field committer[email]="$GITHUB_ACTOR_ID+$GITHUB_ACTOR@users.noreply.github.com"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: CHANGELOG.md
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
-          COMMITTER_NAME: "${GITHUB_ACTOR}"
-          COMMITTER_EMAIL: "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Commit changes to dbt_project.yml
         run: |
