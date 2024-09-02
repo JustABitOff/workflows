@@ -182,7 +182,7 @@ jobs:
             --field sha="$SHA"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: CHANGLOG.md
+          FILE_TO_COMMIT: dbt_project.yml
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
 
       - name: Push changes
