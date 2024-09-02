@@ -75,7 +75,9 @@ jobs:
 
       - name: Merge release PR
         run: |
-          gh pr merge ${{ env.release_pr_number }} --merge
+          gh pr merge ${{ env.release_pr_number }} \
+          --merge \
+          --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -118,7 +120,9 @@ jobs:
 
       - name: Merge PR
         run: |
-          gh pr merge ${{ env.pr_number }} --merge
+          gh pr merge ${{ env.pr_number }} \
+          --merge \
+          --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
