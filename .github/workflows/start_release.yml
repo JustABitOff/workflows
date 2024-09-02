@@ -149,10 +149,17 @@ jobs:
               { print }
           ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
 
+      - name: Update dbt_project.yml
+        run: |
+          sed -i "s/^version: .*/version: \"${{ env.new_version }}\"/" dbt_project.yml
+
       - name: Commit changes
         run: |
           git add CHANGELOG.md
-          git commit -m "Updates CHANGELOG for ${{ env.new_version }} release"
+          git commit -m "Updates CHANGELOG.md for ${{ env.new_version }} release"
+
+          git add dbt_project.yml
+          git commit -m "Updates dbt_project.yml for ${{ env.new_version }} release"
 
       - name: Push changes
         run: |
