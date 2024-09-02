@@ -22,6 +22,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -165,7 +172,7 @@ jobs:
             --field branch="$DESTINATION_BRANCH" \
             --field sha="$SHA"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           FILE_TO_COMMIT: CHANGELOG.md
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
 
@@ -181,7 +188,7 @@ jobs:
             --field branch="$DESTINATION_BRANCH" \
             --field sha="$SHA"
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           FILE_TO_COMMIT: dbt_project.yml
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
 
@@ -193,4 +200,4 @@ jobs:
             --title "Release ${{ env.new_version }}" \
             --body "This PR is to merge the ${{ env.branch_prefix }} branch into main for version ${{ env.new_version }}."
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}

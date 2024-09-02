@@ -1,0 +1,6 @@
+1. create app with contents and PR read/write permissions
+2. Store app_id as secret for actions
+3. Generate private key for the app
+4. Store private key as secret for actions
+5. install app and grant access to desired repo(s)
+6. Generate token in actions
