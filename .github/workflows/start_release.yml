@@ -153,7 +153,7 @@ jobs:
         run: |
           sed -i "s/^version: .*/version: \"${{ env.new_version }}\"/" dbt_project.yml
 
-      - name: Commit changes to CHANGLOG.md
+      - name: Commit changes to CHANGELOG.md
         run: |
           export MESSAGE="Updates CHANGELOG.md for ${{ env.new_version }} release"
           export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
@@ -163,10 +163,12 @@ jobs:
             --field content="$CONTENT" \
             --field encoding="base64" \
             --field branch="$DESTINATION_BRANCH" \
-            --field sha="$SHA"
+            --field sha="$SHA" \
+            --field committer[name]="${GITHUB_ACTOR}"
+            --field committer[email]="${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          FILE_TO_COMMIT: CHANGLOG.md
+          FILE_TO_COMMIT: CHANGELOG.md
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
 
       - name: Commit changes to dbt_project.yml
