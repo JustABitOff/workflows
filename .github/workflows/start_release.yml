@@ -163,9 +163,7 @@ jobs:
             --field content="$CONTENT" \
             --field encoding="base64" \
             --field branch="$DESTINATION_BRANCH" \
-            --field sha="$SHA" \
-            --field committer[name]="$GITHUB_ACTOR" \
-            --field committer[email]="$GITHUB_ACTOR_ID+$GITHUB_ACTOR@users.noreply.github.com"
+            --field sha="$SHA"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: CHANGELOG.md
