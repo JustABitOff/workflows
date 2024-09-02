@@ -16,6 +16,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [v1.5.0](https://github.com/JustABitOff/workflows/compare/v1.4.2...v1.5.0)
+
+### Added
+
+### Changed
+
+- Updated start_release.yml and finalize_release.yml workflow files to add functionality for Hotfixes.
+
+### Removed
+
+### Fixed
+
+
 ## [v1.4.2](https://github.com/JustABitOff/workflows/compare/v1.4.1...v1.4.2)
 
 ### Added
