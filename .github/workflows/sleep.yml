@@ -11,6 +11,20 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+
       - name: Sleep
         run: |
           sleep 10
+
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
