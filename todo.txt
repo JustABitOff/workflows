@@ -8,3 +8,5 @@
     c. Contents - Read/Write
     d. Pull Requests - Read/Write
 6. Generate token in actions
+
+NOTE: Be sure to reinstall app any time permissions are changed.
