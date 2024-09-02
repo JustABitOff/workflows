@@ -164,7 +164,7 @@ jobs:
             --field encoding="base64" \
             --field branch="$DESTINATION_BRANCH" \
             --field sha="$SHA" \
-            --field committer[name]="$COMMITTER_NAME"
+            --field committer[name]="$COMMITTER_NAME" \
             --field committer[email]="$COMMITTER_EMAIL"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
