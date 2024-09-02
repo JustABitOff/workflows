@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       release_type:
-        description: "Select release type"
+        description: "Release Type"
         required: true
         type: choice
         options:
