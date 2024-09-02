@@ -16,6 +16,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 
+## [v4.11.0](https://github.com/JustABitOff/workflows/compare/v4.10.0...v4.11.0)
+
+### Added
+
+### Changed
+
+### Removed
+
+### Fixed
+
+
 ## [v4.10.0](https://github.com/JustABitOff/workflows/compare/v4.9.0...v4.10.0)
 
 ### Added
