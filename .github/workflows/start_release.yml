@@ -8,9 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - Major
           - Minor
           - Patch
+          - Major
           - Manually Specified
       manual_version:
         description: "Manually specify version number"
