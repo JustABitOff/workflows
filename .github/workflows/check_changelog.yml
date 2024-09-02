@@ -1,0 +1,26 @@
+name: Check Changelog Diff
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [opened, reopened, synchronize]
+
+jobs:
+  check_changelog:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check for changes in CHANGELOG.md
+        run: |
+          if git diff --exit-code HEAD^ HEAD -- CHANGELOG.md; then
+            echo "No changes detected in CHANGELOG.md"
+            exit 1
+          else
+            echo "Changes detected in CHANGELOG.md"
+          fi
