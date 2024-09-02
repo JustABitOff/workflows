@@ -1,0 +1,16 @@
+name: Sleep
+
+on:
+  pull_request:
+    branches:
+      - develop
+    types: [opened, reopened, synchronize]
+
+jobs:
+  sleep:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Sleep
+        run: |
+          sleep 120
