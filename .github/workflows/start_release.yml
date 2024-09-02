@@ -170,8 +170,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           FILE_TO_COMMIT: CHANGELOG.md
           DESTINATION_BRANCH: ${{ env.branch_prefix }}/${{ env.new_version }}
-          COMMITTER_NAME: ${GITHUB_ACTOR}
-          COMMITTER_EMAIL: ${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com
+          COMMITTER_NAME: "${GITHUB_ACTOR}"
+          COMMITTER_EMAIL: "${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com"
 
       - name: Commit changes to dbt_project.yml
         run: |
