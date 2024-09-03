@@ -12,7 +12,7 @@ on:
           - Patch
           - Major
       needs_manual_approval:
-        description: "Flag whether or not manual approval is needed before the Production deployment."
+        description: "Needs Manual Approval?"
         required: true
         type: choice
         options:
@@ -45,7 +45,8 @@ jobs:
     secrets: inherit
 
   create_production_release_pull_request:
-    needs: [generate_version_number, create_release_branch]
+    needs:
+      [update_release_artifacts, generate_version_number, create_release_branch]
     uses: ./.github/workflows/reusable-create-pull-request.yml
     with:
       base: main
