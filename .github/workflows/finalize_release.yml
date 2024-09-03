@@ -93,6 +93,7 @@ jobs:
         run: |
           gh pr merge ${{ env.release_pr_number }} \
           --merge \
+          --admin \
           --delete-branch
         env:
           GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
@@ -169,6 +170,8 @@ jobs:
 
       - name: Merge PR
         run: |
-          gh pr merge ${{ env.pr_number }} --merge
+          gh pr merge ${{ env.pr_number }} \
+          --merge \
+          --admin
         env:
           GITHUB_TOKEN: ${{ steps.generate-another-token.outputs.token }}
