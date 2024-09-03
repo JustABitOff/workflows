@@ -33,21 +33,10 @@ jobs:
           current_version=$(git describe --tags --abbrev=0)
           echo "current_version=${current_version}" >> $GITHUB_OUTPUT
 
-      - name: Get release type prefix
-        run: |
-          branch_prefix="release"
-
-          if [ "${{ inputs.release_type }}" = "Patch" ]; then
-            branch_prefix="hotfix"
-          fi
-
-          echo "branch_prefix=${branch_prefix}" >> $GITHUB_ENV
-
       - name: Determine new version
         id: determine_version
         run: |
           latest_version=${{ steps.get_latest_tag.outputs.current_version }}
-          echo "Current version is ${latest_version}"
           IFS='.' read -r major minor patch <<< "${latest_version#v}"
 
           case "${{ inputs.release_type }}" in
@@ -67,5 +56,5 @@ jobs:
 
           new_version="v${major}.${minor}.${patch}"
 
-          echo "new_version=${new_version}" >> $GITHUB_OUTPUT
           echo "New version is ${new_version}"
+          echo "new_version=${new_version}" >> $GITHUB_OUTPUT
