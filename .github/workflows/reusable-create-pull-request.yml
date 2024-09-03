@@ -45,8 +45,8 @@ jobs:
           pull_request_url=$(gh pr create \
             --base ${{ inputs.base }} \
             --head ${{ inputs.head }} \
-            --title ${{ inputs.title }} \
-            --body ${{ inputs.body }})
+            --title "${{ inputs.title }}" \
+            --body "${{ inputs.body }}")
           echo "pull_request_url=${pull_request_url}" >> $GITHUB_OUTPUT
         env:
           GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
