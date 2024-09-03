@@ -60,7 +60,9 @@ jobs:
     if: ${{ inputs.needs_manual_approval == 'true' || inputs.release_type == 'Patch' }}
     environment: "Production"
     steps:
-      - run: echo "Approved to Prod"
+      - run: |
+          echo "Approved to Prod"
+          exit 1
 
   what_it_do:
     runs-on: ubuntu-latest
