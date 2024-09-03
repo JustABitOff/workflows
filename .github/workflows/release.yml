@@ -20,9 +20,9 @@ jobs:
 
   test_it:
     runs-on: ubuntu-latest
-    needs: generate_version_num
+    needs: generate_version_number
     steps:
       - name: Output the versions
         run: |
-          echo "Current version: ${{ needs.generate_version_num.outputs.current_version }}"
-          echo "New version: ${{ steps.determine-version.outputs.new_version }}"
+          echo "Current version: ${{ needs.generate_version_number.outputs.current_version }}"
+          echo "New version: ${{ needs.generate_version_number.outputs.new_version }}"
