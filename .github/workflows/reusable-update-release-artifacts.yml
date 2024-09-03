@@ -1,0 +1,110 @@
+name: Update Release Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      branch_name:
+        description: "The name of the created release/hotfix branch."
+        required: true
+        type: string
+      new_version:
+        description: "The new version number based on the release type"
+        required: true
+        type: string
+      current_version:
+        description: "The current version extracted from the latest tag"
+        required: true
+        type: string
+
+jobs:
+  update_release_artifacts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Update CHANGELOG
+        run: |
+          # Define Unreleased section template
+          UNRELEASED_TEMPLATE="## [Unreleased](https://github.com/JustABitOff/workflows/compare/main...develop)
+
+          ### Added
+
+          ### Changed
+
+          ### Removed
+
+          ### Fixed
+
+          "
+
+          # First pass: Update the existing Unreleased section
+          awk -v new_version="${{ inputs.new_version }}" -v current_version="${{ inputs.current_version }}" '
+              /^## \[Unreleased\]/ {
+                  printf "## [%s](https://github.com/JustABitOff/workflows/compare/%s...%s)", new_version, current_version, new_version
+                  print ""
+                  next
+              }
+              { print }
+          ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
+
+          # Second pass: Add the Unreleased template above any existing releases
+          awk -v unreleased_template="$UNRELEASED_TEMPLATE" '
+              BEGIN { found_unreleased = 0 }
+              /^## \[Unreleased\]/ { 
+                  found_unreleased = 1
+              }
+              /^## \[.*\]/ && found_unreleased == 0 { 
+                  print unreleased_template
+                  found_unreleased = 1
+              }
+              { print }
+          ' CHANGELOG.md > temp_changelog.md && mv temp_changelog.md CHANGELOG.md
+
+      - name: Update dbt_project.yml
+        run: |
+          sed -i "s/^version: .*/version: \"${{ inputs.new_version }}\"/" dbt_project.yml
+
+      - name: Commit changes to CHANGELOG.md
+        run: |
+          export MESSAGE="Updates CHANGELOG.md for ${{ inputs.new_version }} release"
+          export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
+          export CONTENT=$( base64 -i $FILE_TO_COMMIT )
+          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+            --field message="$MESSAGE" \
+            --field content="$CONTENT" \
+            --field encoding="base64" \
+            --field branch="$DESTINATION_BRANCH" \
+            --field sha="$SHA"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          FILE_TO_COMMIT: CHANGELOG.md
+          DESTINATION_BRANCH: ${{ inputs.branch_name }}
+
+      - name: Commit changes to dbt_project.yml
+        run: |
+          export MESSAGE="Updates dbt_project.yml for ${{ inputs.new_version }} release"
+          export SHA=$( git rev-parse $DESTINATION_BRANCH:$FILE_TO_COMMIT )
+          export CONTENT=$( base64 -i $FILE_TO_COMMIT )
+          gh api --method PUT /repos/:owner/:repo/contents/$FILE_TO_COMMIT \
+            --field message="$MESSAGE" \
+            --field content="$CONTENT" \
+            --field encoding="base64" \
+            --field branch="$DESTINATION_BRANCH" \
+            --field sha="$SHA"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          FILE_TO_COMMIT: dbt_project.yml
+          DESTINATION_BRANCH: ${{ inputs.branch_name }}
