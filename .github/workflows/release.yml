@@ -1,0 +1,28 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_type:
+        description: "Release Type"
+        required: true
+        type: choice
+        options:
+          - Minor
+          - Patch
+          - Major
+
+jobs:
+  generate_version_number:
+    uses: ./.github/workflows/reusable-generate-version-number.yml
+    with:
+      release_type: ${{ github.event.inputs.release_type }}
+
+  test_it:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output the versions
+        needs: generate_version_num
+        run: |
+          echo "Current version: ${{ needs.generate_version_num.outputs.current_version }}"
+          echo "New version: ${{ steps.determine-version.outputs.new_version }}"
