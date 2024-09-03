@@ -30,6 +30,11 @@ jobs:
     outputs:
       pull_request_url: ${{ steps.get_latest_tag.outputs.current_version }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Generate a token
         id: generate_token
         uses: actions/create-github-app-token@v1
