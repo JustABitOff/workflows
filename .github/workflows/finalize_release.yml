@@ -171,4 +171,4 @@ jobs:
         run: |
           gh pr merge ${{ env.pr_number }} --merge
         env:
-          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.generate-another-token.outputs.token }}
