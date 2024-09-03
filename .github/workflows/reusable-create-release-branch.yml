@@ -29,7 +29,7 @@ jobs:
 
       - name: Generate a token
         id: generate_token
-        uses: actions/create-github-generate_token@v1
+        uses: actions/create-github-generate-token@v1
         with:
           app-id: ${{ secrets.JABO_APP_ID }}
           private-key: ${{ secrets.JABO_PRIVATE_KEY }}
