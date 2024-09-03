@@ -62,7 +62,6 @@ jobs:
     steps:
       - run: |
           echo "Approved to Prod"
-          exit 1
 
   what_it_do:
     runs-on: ubuntu-latest
