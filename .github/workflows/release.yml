@@ -43,3 +43,12 @@ jobs:
       - name: Output the release branch
         run: |
           echo "Release branch: ${{ needs.create_release_branch.outputs.branch_name }}"
+
+  update_release_artifacts:
+    needs: [generate_version_number, create_release_branch]
+    uses: ./.github/workflows/reusable-update-release-artifacts.yml
+    with:
+      new_version: ${{ needs.generate_version_number.outputs.new_version }}
+      current_version: ${{ needs.generate_version_number.outputs.current_version }}
+      branch_name: ${{ needs.create_release_branch.outputs.branch_name }}
+    secrets: inherit
