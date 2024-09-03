@@ -64,7 +64,6 @@ jobs:
 
   what_it_do:
     runs-on: ubuntu-latest
-    needs: manual_approval
-    if: ${{ needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped' }}
+    if: ${{ jobs.manual_approval.result == 'success' || jobs.manual_approval.result == 'skipped' }}
     steps:
       - run: echo "what this do"
