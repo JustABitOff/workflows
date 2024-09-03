@@ -11,6 +11,14 @@ on:
           - Minor
           - Patch
           - Major
+      needs_manual_approval:
+        description: "Flag whether or not manual approval is needed before the Production deployment."
+        required: true
+        type: choice
+        options:
+          - false
+          - true
+        default: false
 
 jobs:
   generate_version_number:
@@ -47,14 +55,9 @@ jobs:
     secrets: inherit
 
   manual_approval:
-    environment: "Production"
     runs-on: ubuntu-latest
     needs: create_production_release_pull_request
+    if: ${{ inputs.needs_manual_approval == 'true' || inputs.release_type == 'Patch' }}
+    environment: "Production"
     steps:
       - run: echo "Approved to Prod"
-
-  post_approval:
-    runs-on: ubuntu-latest
-    needs: manual_approval
-    steps:
-      - run: echo "Woohoo!"
