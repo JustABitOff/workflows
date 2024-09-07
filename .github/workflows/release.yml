@@ -8,16 +8,16 @@ on:
         required: true
         type: choice
         options:
-          - Minor
-          - Patch
-          - Major
+          - "Minor"
+          - "Patch"
+          - "Major"
       needs_manual_approval:
         description: "Needs Manual Approval?"
         required: true
         type: choice
         options:
-          - "No"
           - "Yes"
+          - "No"
 
 jobs:
   generate_version_number:
