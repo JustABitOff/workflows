@@ -65,12 +65,10 @@ jobs:
           echo "Approved to Prod"
 
   merge_production_release_pull_request_to_main:
-    runs-on: ubuntu-latest
     needs: [create_production_release_pull_request, manual_approval]
-    steps:
-      - name: Merge Production Release Pull Request to Main
-        if: ${{ always() && (needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped') }}
-        uses: ./.github/workflows/reusable-merge-pr-after-passing-checks.yml
-        with:
-          pull_request_url: ${{ needs.create_production_release_pull_request.outputs.pull_request_url }}
-          delete_branch_after_merge: "Yes"
+    if: ${{ always() && (needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped') }}
+    uses: ./.github/workflows/reusable-merge-pr-after-passing-checks.yml
+    secrets: inherit
+    with:
+      pull_request_url: ${{ needs.create_production_release_pull_request.outputs.pull_request_url }}
+      delete_branch_after_merge: "Yes"
