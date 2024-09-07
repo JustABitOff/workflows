@@ -11,10 +11,7 @@ on:
         description: "Flag whether or not to delete head branch after merge."
         required: false
         type: choice
-        options:
-          - No
-          - Yes
-        default: No
+        default: "No"
 
 jobs:
   create_pull_request:
