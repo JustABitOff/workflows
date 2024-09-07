@@ -8,16 +8,16 @@ on:
         required: true
         type: choice
         options:
-          - Minor
-          - Patch
-          - Major
+          - "Minor"
+          - "Patch"
+          - "Major"
       needs_manual_approval:
         description: "Needs Manual Approval?"
         required: true
         type: choice
         options:
-          - "No"
           - "Yes"
+          - "No"
 
 jobs:
   generate_version_number:
@@ -71,3 +71,27 @@ jobs:
     with:
       pull_request_url: ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }}
       delete_branch_after_merge: "Yes"
+
+  create_release:
+    needs: [merge_production_release_pull_request_to_main, manual_approval]
+    uses: ./.github/workflows/reusable-create-release.yml
+    secrets: inherit
+    with:
+      new_version: ${{ needs.generate_version_number.outputs.new_version }}
+
+  create_pull_request_main_to_develop:
+    needs: create_release
+    uses: ./.github/workflows/reusable-create-pull-request.yml
+    with:
+      base: develop
+      head: main
+      body: "Pull request to catch up develop for ${{ github.event.inputs.release_type }} release ${{ needs.generate_version_number.outputs.new_version }}."
+      title: "Develop Catch Up for Release ${{ needs.generate_version_number.outputs.new_version }}"
+    secrets: inherit
+
+  merge_main_to_develop:
+    needs: create_pull_request_main_to_develop
+    uses: ./.github/workflows/reusable-merge-pr-after-passing-checks.yml
+    secrets: inherit
+    with:
+      pull_request_url: ${{ needs.create_pull_request_main_to_develop.outputs.pull_request_url }}
