@@ -10,7 +10,6 @@ on:
       delete_branch_after_merge:
         description: "Flag whether or not to delete head branch after merge."
         required: false
-        type: choice
         default: "No"
 
 jobs:
