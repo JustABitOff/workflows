@@ -9,7 +9,8 @@ on:
         type: string
       delete_branch_after_merge:
         description: "Flag whether or not to delete head branch after merge."
-        required: false
+        required: true
+        type: string
         default: "No"
 
 jobs:
