@@ -1,0 +1,45 @@
+name: Create Release
+
+on:
+  workflow_call:
+    inputs:
+      new_version:
+        description: "The new version number."
+        required: true
+        type: string
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Checkout Main Branch
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Get Release Notes
+        id: get_release_notes
+        run: |
+          git pull
+          awk '/^## \[${{ inputs.new_version }}\]/ {flag=1; next} /^## \[/{if (flag) exit} flag {print $0}' CHANGELOG.md >> tmp_CHANGELOG.md
+          sleep 10
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "${{ inputs.new_version }}" \
+            --title "${{ inputs.new_version }}" \
+            --notes-file tmp_CHANGELOG.md \
+            --latest \
+            --target main
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
