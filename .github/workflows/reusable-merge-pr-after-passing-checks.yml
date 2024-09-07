@@ -1,0 +1,60 @@
+name: Merge Pull Request After Passing Checks
+
+on:
+  workflow_call:
+    inputs:
+      pull_request_url:
+        description: "The URL of the pull request to merge."
+        required: true
+        type: string
+      delete_branch_after_merge:
+        description: "Flag whether or not to delete head branch after merge."
+        required: true
+        type: string
+        default: "No"
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Wait for PR Checks to Pass
+        run: |
+          checks_response=$(gh pr checks ${{ inputs.pull_request_url }} 2>&1) || \
+          if echo "$checks_response" | grep -qE "no checks reported on the '.*' branch"; then
+            echo "No checks found on this PR."
+            has_checks=false
+          else
+            echo "Checks found on this PR...continuing..."
+            has_checks=true
+          fi
+
+          if [ "$has_checks" = true ]; then
+            gh pr checks ${{ inputs.pull_request_url }} --watch
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Merge Pull Request
+        run: |
+          if [ "${{ inputs.delete_branch_after_merge }}" = 'Yes' ]; then
+            gh pr merge ${{ inputs.pull_request_url }} \
+            --merge \
+            --admin \
+            --delete-branch
+          else
+            gh pr merge ${{ inputs.pull_request_url }} \
+            --merge \
+            --admin
+          fi
+        env:
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
