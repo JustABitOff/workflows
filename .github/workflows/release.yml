@@ -18,7 +18,6 @@ on:
         options:
           - No
           - Yes
-        default: No
 
 jobs:
   generate_version_number:
