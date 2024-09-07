@@ -16,9 +16,8 @@ on:
         required: true
         type: choice
         options:
-          - No
-          - Yes
-        default: No
+          - "No"
+          - "Yes"
 
 jobs:
   generate_version_number:
