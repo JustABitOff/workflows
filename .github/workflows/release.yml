@@ -73,14 +73,19 @@ jobs:
       delete_branch_after_merge: "Yes"
 
   create_release:
-    needs: [merge_production_release_pull_request_to_main, manual_approval]
+    needs:
+      [
+        merge_production_release_pull_request_to_main,
+        manual_approval,
+        generate_version_number,
+      ]
     uses: ./.github/workflows/reusable-create-release.yml
     secrets: inherit
     with:
       new_version: ${{ needs.generate_version_number.outputs.new_version }}
 
   create_pull_request_main_to_develop:
-    needs: create_release
+    needs: [create_release, generate_version_number]
     uses: ./.github/workflows/reusable-create-pull-request.yml
     with:
       base: develop
