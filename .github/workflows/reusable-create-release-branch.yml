@@ -1,0 +1,75 @@
+name: Create Release Branch
+
+on:
+  workflow_call:
+    inputs:
+      release_type:
+        description: "The type of release (Major, Minor, Patch)"
+        required: true
+        type: string
+      new_version:
+        description: "The new version number based on the release type"
+        required: true
+        type: string
+    outputs:
+      branch_name:
+        description: "The name of the created release/hotfix branch."
+        value: ${{ jobs.create_release_branch.outputs.branch_name }}
+
+jobs:
+  create_release_branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.create_branch.outputs.branch_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Get release type prefix
+        run: |
+          branch_prefix="release"
+
+          if [ "${{ inputs.release_type }}" = "Patch" ]; then
+            branch_prefix="hotfix"
+          fi
+
+          echo "branch_prefix=${branch_prefix}" >> $GITHUB_ENV
+
+      - name: Get GitHub App User ID
+        id: get_user_id
+        run: echo "user-id=$(gh api "/users/${{ steps.generate_token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Set up Git
+        run: |
+          git config --global user.name '${{ steps.generate_token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get_user_id.outputs.user-id }}+${{ steps.generate_token.outputs.app-slug }}[bot]@users.noreply.github.com>'
+
+      - name: Create Branch
+        id: create_branch
+        run: |
+          branch_name=${{ env.branch_prefix }}/${{ inputs.new_version }}
+          echo "branch_name=${branch_name}" >> $GITHUB_OUTPUT
+
+          base_branch="develop"
+
+          if [ "${{ inputs.release_type }}" = "Patch" ]; then
+            base_branch="main"
+          fi
+
+          git checkout $base_branch
+          git checkout -b ${{ env.branch_prefix }}/${{ inputs.new_version }} ${base_branch}
+          git push origin ${{ env.branch_prefix }}/${{ inputs.new_version }}

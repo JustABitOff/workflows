@@ -1,0 +1,60 @@
+name: Generate Version Number
+
+on:
+  workflow_call:
+    inputs:
+      release_type:
+        description: "The type of release (Major, Minor, Patch)"
+        required: true
+        type: string
+    outputs:
+      current_version:
+        description: "The current version extracted from the latest tag"
+        value: ${{ jobs.generate_version_number.outputs.current_version }}
+      new_version:
+        description: "The new version number based on the release type"
+        value: ${{ jobs.generate_version_number.outputs.new_version }}
+
+jobs:
+  generate_version_number:
+    runs-on: ubuntu-latest
+    outputs:
+      current_version: ${{ steps.get_latest_tag.outputs.current_version }}
+      new_version: ${{ steps.determine_version.outputs.new_version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get the latest tag
+        id: get_latest_tag
+        run: |
+          current_version=$(git describe --tags --abbrev=0)
+          echo "current_version=${current_version}" >> $GITHUB_OUTPUT
+
+      - name: Determine new version
+        id: determine_version
+        run: |
+          latest_version=${{ steps.get_latest_tag.outputs.current_version }}
+          IFS='.' read -r major minor patch <<< "${latest_version#v}"
+
+          case "${{ inputs.release_type }}" in
+            "Major")
+              major=$((major + 1))
+              minor=0
+              patch=0
+              ;;
+            "Minor")
+              minor=$((minor + 1))
+              patch=0
+              ;;
+            "Patch")
+              patch=$((patch + 1))
+              ;;
+          esac
+
+          new_version="v${major}.${minor}.${patch}"
+
+          echo "New version is ${new_version}"
+          echo "new_version=${new_version}" >> $GITHUB_OUTPUT

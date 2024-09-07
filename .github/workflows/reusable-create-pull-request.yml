@@ -1,0 +1,58 @@
+name: Create Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      base:
+        description: "The base branch for the pull request."
+        required: true
+        type: string
+      head:
+        description: "The head branch for the pull request."
+        required: true
+        type: string
+      body:
+        description: "Description of the pull request to add to the body."
+        required: true
+        type: string
+      title:
+        description: "The title for the pull request."
+        required: true
+        type: string
+    outputs:
+      pull_request_url:
+        description: "The URL of the created pull request."
+        value: ${{ jobs.create_pull_request.outputs.pull_request_url }}
+
+jobs:
+  create_pull_request:
+    runs-on: ubuntu-latest
+    outputs:
+      pull_request_url: ${{ steps.create_pull_request.outputs.pull_request_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Create pull request
+        id: create_pull_request
+        run: |
+          pull_request_url=$(gh pr create \
+            --base ${{ inputs.base }} \
+            --head ${{ inputs.head }} \
+            --title "${{ inputs.title }}" \
+            --body "${{ inputs.body }}")
+          echo "pull_request_url=${pull_request_url}" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
