@@ -101,15 +101,15 @@ jobs:
 
   rejected_release_cleaup:
     runs-on: ubuntu-latest
-    needs: manual_approval
+    needs: [create_production_release_pull_request_to_main, manual_approval]
     if: ${{ always() && needs.manual_approval.result == 'failure' }}
     steps:
-      - name: Rejected - Delete Release Branch
-        run: |
-          echo "Release rejected..."
-          echo "Deleting release branch..."
-
-      - name: Rejected - Close Pull Request
+      - name: Close Pull Request
         run: |
           echo "Release rejected..."
           echo "Closing pull request..."
+          echo "Deleting release branch..."
+
+          gh pr close ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }} \
+          --delete-branch \
+          --comment "Release rejected by ${{ github.actor }}. Closing pull request"
