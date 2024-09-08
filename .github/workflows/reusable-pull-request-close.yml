@@ -33,6 +33,8 @@ jobs:
 
       - name: Close Pull Request
         run: |
+          echo "${{ inputs.pull_request_url }}"
+
           close_command="gh pr close ${{ inputs.pull_request_url }}"
 
           if [ "${{ inputs.delete_branch }}" = "Yes" ]; then
