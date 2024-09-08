@@ -14,7 +14,7 @@ on:
         default: "No"
       comment:
         description: "Optional comment to add the PR before closing."
-        required: flase
+        required: false
         type: string
 
 jobs:
