@@ -104,6 +104,16 @@ jobs:
     needs: [create_production_release_pull_request_to_main, manual_approval]
     if: ${{ always() && needs.manual_approval.result == 'failure' }}
     steps:
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
       - name: Close Pull Request
         run: |
           echo "Release rejected..."
@@ -112,6 +122,6 @@ jobs:
 
           gh pr close ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }} \
           --delete-branch \
-          --comment "Release rejected by ${{ github.actor }}. Closing pull request"
+          --comment "Release rejected by @${{ github.actor }}. Closing pull request."
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
