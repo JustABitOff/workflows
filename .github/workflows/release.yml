@@ -112,6 +112,6 @@ jobs:
 
           gh pr close ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }} \
           --delete-branch \
-          --comment "Release rejected by ${{ github.actor }}. Closing pull request"
+          --comment "Release rejected by @${{ github.actor }}. Closing pull request"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
