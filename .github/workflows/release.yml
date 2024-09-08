@@ -75,14 +75,20 @@ jobs:
 
   create_release:
     needs:
-      [merge_production_release_pull_request_to_main, generate_version_number]
+      [
+        merge_production_release_pull_request_to_main,
+        generate_version_number,
+        manual_approval,
+      ]
+    if: ${{ always() && (needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped') }}
     uses: ./.github/workflows/reusable-create-release.yml
     secrets: inherit
     with:
       new_version: ${{ needs.generate_version_number.outputs.new_version }}
 
   create_pull_request_main_to_develop:
-    needs: [create_release, generate_version_number]
+    needs: [create_release, generate_version_number, manual_approval]
+    if: ${{ always() && (needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped') }}
     uses: ./.github/workflows/reusable-pull-request-create.yml
     secrets: inherit
     with:
@@ -92,7 +98,8 @@ jobs:
       title: "Develop Catch Up for Release ${{ needs.generate_version_number.outputs.new_version }}"
 
   merge_main_to_develop:
-    needs: create_pull_request_main_to_develop
+    needs: [create_pull_request_main_to_develop, manual_approval]
+    if: ${{ always() && (needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped') }}
     uses: ./.github/workflows/reusable-pull-request-merge.yml
     secrets: inherit
     with:
