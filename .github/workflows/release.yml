@@ -60,8 +60,21 @@ jobs:
     if: ${{ inputs.needs_manual_approval == 'Yes' || inputs.release_type == 'Patch' }}
     environment: "Production"
     steps:
-      - run: |
+      - name: Approved
+        run: |
           echo "Approved to Prod"
+
+      - name: Rejected - Delete Release Branch
+        if: failure()
+        run: |
+          echo "Release rejected..."
+          echo "Deleting release branch..."
+
+      - name: Rejected - Close Pull Request
+        if: failure()
+        run: |
+          echo "Release rejected..."
+          echo "Closing pull request..."
 
   merge_production_release_pull_request_to_main:
     needs: [create_production_release_pull_request_to_main, manual_approval]
