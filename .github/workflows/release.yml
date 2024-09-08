@@ -105,6 +105,6 @@ jobs:
     uses: ./.github/workflows/reusable-pull-request-close.yml
     secrets: inherit
     with:
-      pull_request_url: ${{ needs.create_pull_request_main_to_develop.outputs.pull_request_url }}
+      pull_request_url: ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }}
       delete_branch: "Yes"
       comment: "Release rejected by @${{ github.actor }}. Closing pull request."
