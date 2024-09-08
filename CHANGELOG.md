@@ -9,7 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Removed
+
+### Fixed
+
+
+## [v6.0.0](https://github.com/JustABitOff/workflows/compare/v5.8.0...v6.0.0)
+
+### Added
+
 - Make Release reusable
+
+### Changed
+
+### Removed
+
+### Fixed
+
+
+## [v5.9.0](https://github.com/JustABitOff/workflows/compare/v5.8.0...v5.9.0)
+
+### Added
 
 ### Changed
 
