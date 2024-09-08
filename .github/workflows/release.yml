@@ -74,11 +74,7 @@ jobs:
 
   create_release:
     needs:
-      [
-        merge_production_release_pull_request_to_main,
-        manual_approval,
-        generate_version_number,
-      ]
+      [merge_production_release_pull_request_to_main, generate_version_number]
     uses: ./.github/workflows/reusable-create-release.yml
     secrets: inherit
     with:
