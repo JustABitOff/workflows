@@ -22,7 +22,7 @@ on:
     outputs:
       pull_request_url:
         description: "The URL of the created pull request."
-        value: ${{ jobs.create_pull_request.outputs.pull_request_url }}
+        value: ${{ jobs.pull_request_create.outputs.pull_request_url }}
 
 jobs:
   pull_request_create:
