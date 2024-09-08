@@ -35,12 +35,12 @@ jobs:
         run: |
           close_command="gh pr close ${{ inputs.pull_request_url }}"
 
-          if [ "${{ inputs.delete_branch }}" = 'Yes' ]; then
+          if [ "${{ inputs.delete_branch }}" = "Yes" ]; then
             close_command="$close_command --delete-branch"
           fi
 
           if [ -n "${{ inputs.comment }}" ]; then
-            close_command="$close_command --comment ${{ inputs.comment }}"
+            close_command="$close_command --comment '${{ inputs.comment }}'"
           fi          
 
           eval "$close_command"
