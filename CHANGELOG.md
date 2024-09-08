@@ -10,8 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 ### Changed
+ 
+- Renamed some workflows
 
 ### Removed
+
+- Removed some old workflows
 
 ### Fixed
 
