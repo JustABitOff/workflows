@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Cleaned up workflows to be more reusable.
+
 ### Removed
 
 ### Fixed

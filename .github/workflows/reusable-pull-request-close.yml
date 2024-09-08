@@ -1,0 +1,48 @@
+name: Close Pull Request
+
+on:
+  workflow_call:
+    inputs:
+      pull_request_url:
+        description: "The URL of the pull request to merge."
+        required: true
+        type: string
+      delete_branch:
+        description: "Flag whether or not to delete the branch."
+        required: true
+        type: string
+        default: "No"
+      comment:
+        description: "Optional comment to add the PR before closing."
+        required: flase
+        type: string
+
+jobs:
+  pull_request_close:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate-token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Close Pull Request
+        run: |
+          close_command="gh pr close ${{ inputs.pull_request_url }}"
+
+          if [ "${{ inputs.delete_branch }}" = 'Yes' ]; then
+            close_command="$close_command --delete-branch"
+          fi
+
+          if [ -n "${{ inputs.comment }}" ]; then
+            close_command="$close_command --comment ${{ inputs.comment }}"
+          fi          
+
+          eval "$close_command"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}

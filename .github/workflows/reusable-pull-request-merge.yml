@@ -14,7 +14,7 @@ on:
         default: "No"
 
 jobs:
-  create_pull_request:
+  pull_request_merge:
     runs-on: ubuntu-latest
     steps:
       - name: Generate a token

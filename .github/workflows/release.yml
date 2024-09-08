@@ -22,37 +22,37 @@ on:
 jobs:
   generate_version_number:
     uses: ./.github/workflows/reusable-generate-version-number.yml
+    secrets: inherit
     with:
       release_type: ${{ github.event.inputs.release_type }}
-    secrets: inherit
 
   create_release_branch:
     needs: generate_version_number
     uses: ./.github/workflows/reusable-create-release-branch.yml
+    secrets: inherit
     with:
       release_type: ${{ github.event.inputs.release_type }}
       new_version: ${{ needs.generate_version_number.outputs.new_version }}
-    secrets: inherit
 
   update_release_artifacts:
     needs: [generate_version_number, create_release_branch]
     uses: ./.github/workflows/reusable-update-release-artifacts.yml
+    secrets: inherit
     with:
       new_version: ${{ needs.generate_version_number.outputs.new_version }}
       current_version: ${{ needs.generate_version_number.outputs.current_version }}
       branch_name: ${{ needs.create_release_branch.outputs.branch_name }}
-    secrets: inherit
 
   create_production_release_pull_request_to_main:
     needs:
       [update_release_artifacts, generate_version_number, create_release_branch]
-    uses: ./.github/workflows/reusable-create-pull-request.yml
+    uses: ./.github/workflows/reusable-pull-request-create.yml
+    secrets: inherit
     with:
       base: main
       head: ${{ needs.create_release_branch.outputs.branch_name }}
       body: "Pull request for ${{ github.event.inputs.release_type }} release ${{ needs.generate_version_number.outputs.new_version }}."
       title: "Release ${{ needs.generate_version_number.outputs.new_version }}"
-    secrets: inherit
 
   manual_approval:
     runs-on: ubuntu-latest
@@ -67,7 +67,7 @@ jobs:
   merge_production_release_pull_request_to_main:
     needs: [create_production_release_pull_request_to_main, manual_approval]
     if: ${{ always() && (needs.manual_approval.result == 'success' || needs.manual_approval.result == 'skipped') }}
-    uses: ./.github/workflows/reusable-merge-pr-after-passing-checks.yml
+    uses: ./.github/workflows/reusable-pull-request-merge.yml
     secrets: inherit
     with:
       pull_request_url: ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }}
@@ -83,45 +83,28 @@ jobs:
 
   create_pull_request_main_to_develop:
     needs: [create_release, generate_version_number]
-    uses: ./.github/workflows/reusable-create-pull-request.yml
+    uses: ./.github/workflows/reusable-pull-request-create.yml
+    secrets: inherit
     with:
       base: develop
       head: main
       body: "Pull request to catch up develop for ${{ github.event.inputs.release_type }} release ${{ needs.generate_version_number.outputs.new_version }}."
       title: "Develop Catch Up for Release ${{ needs.generate_version_number.outputs.new_version }}"
-    secrets: inherit
 
   merge_main_to_develop:
     needs: create_pull_request_main_to_develop
-    uses: ./.github/workflows/reusable-merge-pr-after-passing-checks.yml
+    uses: ./.github/workflows/reusable-pull-request-merge.yml
     secrets: inherit
     with:
       pull_request_url: ${{ needs.create_pull_request_main_to_develop.outputs.pull_request_url }}
       delete_branch_after_merge: "No"
 
   rejected_release_cleaup:
-    runs-on: ubuntu-latest
     needs: [create_production_release_pull_request_to_main, manual_approval]
     if: ${{ always() && needs.manual_approval.result == 'failure' }}
-    steps:
-      - name: Generate a token
-        id: generate_token
-        uses: actions/create-github-app-token@v1
-        with:
-          app-id: ${{ secrets.JABO_APP_ID }}
-          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
-          # will need to set the owner and repository
-          # owner: "ownername"
-          repositories: "workflows"
-
-      - name: Close Pull Request
-        run: |
-          echo "Release rejected..."
-          echo "Closing pull request..."
-          echo "Deleting release branch..."
-
-          gh pr close ${{ needs.create_production_release_pull_request_to_main.outputs.pull_request_url }} \
-          --delete-branch \
-          --comment "Release rejected by @${{ github.actor }}. Closing pull request."
-        env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+    uses: ./.github/workflows/reusable-pull-request-close.yml
+    secrets: inherit
+    with:
+      pull_request_url: ${{ needs.create_pull_request_main_to_develop.outputs.pull_request_url }}
+      delete_branch: "Yes"
+      comment: "Release rejected by @${{ github.actor }}. Closing pull request."
