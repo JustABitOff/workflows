@@ -39,7 +39,8 @@ jobs:
           fi
 
           if [ "$has_checks" = true ]; then
-            gh pr checks ${{ inputs.pull_request_url }} --watch
+            gh pr checks ${{ inputs.pull_request_url }} --watch \
+            --interval 60
           fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
