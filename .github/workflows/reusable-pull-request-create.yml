@@ -36,7 +36,7 @@ jobs:
           fetch-depth: 0
 
       - name: Generate a token
-        id: generate_token
+        id: generate-token
         uses: actions/create-github-app-token@v1
         with:
           app-id: ${{ secrets.JABO_APP_ID }}
@@ -55,4 +55,4 @@ jobs:
             --body "${{ inputs.body }}")
           echo "pull_request_url=${pull_request_url}" >> $GITHUB_OUTPUT
         env:
-          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
