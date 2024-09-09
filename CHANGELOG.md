@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Removed
+
+### Fixed
+
+
+## [v7.2.0](https://github.com/JustABitOff/workflows/compare/v7.1.0...v7.2.0)
+
+### Added
+
+### Changed
+
 - Updated `hello_world.sh` with a smiley face.
 
 ### Removed
