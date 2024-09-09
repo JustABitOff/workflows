@@ -36,6 +36,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Changed hello_world for this [jira](www.jira.com/scds-1234)
+- happy face now
 
 ### Removed
 
