@@ -1,4 +1,4 @@
 #!/bin/bash
 
 echo "Hello, World!!!!!!! :)"
-echo "Hotfix!!"
+echo "Hotfix added back in!!"
