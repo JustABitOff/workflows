@@ -26,6 +26,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- This is the new hotfix
+
 
 ## [v7.3.4](https://github.com/JustABitOff/workflows/compare/v7.3.3...v7.3.4)
 
