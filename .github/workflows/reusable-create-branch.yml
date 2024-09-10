@@ -1,0 +1,52 @@
+name: Create Branch
+
+on:
+  workflow_call:
+    inputs:
+      base_branch:
+        description: "The base branch."
+        required: true
+        type: string
+      branch_name:
+        description: "The name of the branch to be created."
+        required: true
+        type: string
+
+jobs:
+  create_branch:
+    runs-on: ubuntu-latest
+    outputs:
+      branch_name: ${{ steps.create_branch.outputs.branch_name }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.JABO_APP_ID }}
+          private-key: ${{ secrets.JABO_PRIVATE_KEY }}
+          # will need to set the owner and repository
+          # owner: "ownername"
+          repositories: "workflows"
+
+      - name: Get GitHub App User ID
+        id: get_user_id
+        run: echo "user-id=$(gh api "/users/${{ steps.generate_token.outputs.app-slug }}[bot]" --jq .id)" >> "$GITHUB_OUTPUT"
+        env:
+          GITHUB_TOKEN: ${{ steps.generate_token.outputs.token }}
+
+      - name: Set up Git
+        run: |
+          git config --global user.name '${{ steps.generate_token.outputs.app-slug }}[bot]'
+          git config --global user.email '${{ steps.get_user_id.outputs.user-id }}+${{ steps.generate_token.outputs.app-slug }}[bot]@users.noreply.github.com>'
+
+      - name: Create Branch
+        id: create_branch
+        run: |
+          git checkout ${{ inputs.base_branch }}
+          git checkout -b ${{ inputs.branch_name }} ${{ inputs.base_branch }}
+          git push origin ${{ inputs.branch_name }}
