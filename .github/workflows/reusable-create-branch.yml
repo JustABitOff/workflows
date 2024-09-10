@@ -11,6 +11,10 @@ on:
         description: "The name of the branch to be created."
         required: true
         type: string
+    outputs:
+      branch_name:
+        description: "The name of the created branch."
+        value: ${{ jobs.create_release_branch.outputs.branch_name }}
 
 jobs:
   create_branch:

@@ -26,6 +26,14 @@ jobs:
     with:
       release_type: ${{ github.event.inputs.release_type }}
 
+  update_release_artifacts:
+    needs: generate_version_number
+    uses: ./.github/workflows/reusable-update-release-artifacts.yml
+    secrets: inherit
+    with:
+      new_version: ${{ needs.generate_version_number.outputs.new_version }}
+      current_version: ${{ needs.generate_version_number.outputs.current_version }}
+
   create_release_branch:
     needs: generate_version_number
     uses: ./.github/workflows/reusable-create-release-branch.yml
@@ -33,15 +41,6 @@ jobs:
     with:
       release_type: ${{ github.event.inputs.release_type }}
       new_version: ${{ needs.generate_version_number.outputs.new_version }}
-
-  update_release_artifacts:
-    needs: [generate_version_number, create_release_branch]
-    uses: ./.github/workflows/reusable-update-release-artifacts.yml
-    secrets: inherit
-    with:
-      new_version: ${{ needs.generate_version_number.outputs.new_version }}
-      current_version: ${{ needs.generate_version_number.outputs.current_version }}
-      branch_name: ${{ needs.create_release_branch.outputs.branch_name }}
 
   create_production_release_pull_request_to_main:
     needs:
